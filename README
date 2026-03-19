@@ -1,99 +1,155 @@
-# Parallel Essay Review Agent API
 
-This project is a FastAPI + LangGraph based essay review agent.
 
-## What Our Agent Does
-Given an essay, the agent runs 3 reviews in parallel:
-- Language quality
-- Depth of analysis
-- Clarity of thought
+Parallel Essay Review Agent API
 
-Then it combines all outputs and returns:
-- Individual feedback points
-- Overall feedback summary
-- Final average score
+This project is an AI-powered essay evaluation system built using FastAPI and LangGraph. It processes a given essay through multiple evaluation pipelines in parallel and returns structured feedback along with a final score.
 
-## Tech Stack
-- FastAPI (API server)
-- LangGraph (parallel workflow)
-- Ollama (default local model: `qwen3:8b`)
-- Docker (easy container run)
+⸻
 
-## API Endpoints
-- `GET /home_test` -> health check
-- `POST /review` -> review an essay
+Overview
 
-Example payload:
-```json
+The system uses a parallel agent-based workflow to analyze an essay across multiple dimensions instead of relying on a single sequential evaluation. Each agent focuses on a specific aspect of writing, and the results are aggregated into a final response.
+
+⸻
+
+Features
+	•	Parallel essay evaluation using LangGraph
+	•	Multi-dimensional analysis:
+	•	Language quality
+	•	Depth of analysis
+	•	Clarity of thought
+	•	Aggregated feedback and scoring
+	•	FastAPI-based REST API
+	•	Local model support via Ollama
+	•	Docker support for deployment
+
+⸻
+
+Architecture
+
+Client applications send requests to the FastAPI server. The backend uses a LangGraph workflow to execute multiple evaluation agents in parallel. Each agent processes the essay independently, and the results are combined before returning a response.
+
+⸻
+
+Tech Stack
+	•	FastAPI
+	•	LangGraph
+	•	Ollama (default model: qwen3:8b)
+	•	Docker
+
+⸻
+
+API Endpoints
+
+GET /home_test
+
+Health check endpoint.
+
+POST /review
+
+Processes an essay and returns structured feedback.
+
+Request Example
+
 {
   "essay": "Your essay text here..."
 }
-```
 
-## Local Run (No API Key Needed)
-This is the easiest path and works with local Ollama.
+Response Example
 
-1. Pull and start Ollama model:
-```bash
+{
+  "language_feedback": "...",
+  "depth_feedback": "...",
+  "clarity_feedback": "...",
+  "final_score": 8.2,
+  "summary": "Overall evaluation summary"
+}
+
+
+⸻
+
+Local Setup
+
+1. Start Ollama
+
 ollama pull qwen3:8b
 ollama serve
-```
 
-2. Create virtual env and install deps:
-```bash
+2. Setup Environment
+
 python -m venv myenv
 source myenv/bin/activate
 pip install -r requirements.txt
-```
 
-3. Start FastAPI server:
-```bash
+3. Run Server
+
 uvicorn fast_api:app --reload --host 0.0.0.0 --port 8000
-```
 
-## How To Use Your Own API Key
-1. Open `.env`.
-2. Replace `ENTER_YOUR_API_KEY` with your real key for the provider you want.
-3. Keep only keys you actually use.
 
-Important:
-- Current backend is configured for Ollama by default.
-- If you want cloud model calls, update model client setup in `backend_.py` accordingly.
+⸻
 
-## Docker Usage (No Headache Steps)
-1. Build image:
-```bash
+Using API Keys
+
+Update the .env file with your API key if using external providers. The default configuration uses a local Ollama model.
+
+⸻
+
+Docker Usage
+
+Build Image
+
 docker build -t parallel-graph:latest .
-```
 
-2. Run container:
-```bash
+Run Container
+
 docker run --rm --name parallel-graph -p 8000:8000 --env-file .env parallel-graph:latest
-```
 
-3. If Ollama runs on your host machine, run container with host mapping env:
-```bash
+With Host Ollama
+
 docker run --rm --name parallel-graph -p 8000:8000 \
-  --env-file .env \
-  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
-  parallel-graph:latest
-```
+--env-file .env \
+-e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+parallel-graph:latest
 
-4. Stop container:
-```bash
+Stop Container
+
 docker stop parallel-graph
-```
 
-## Quick API Test
-```bash
+
+⸻
+
+API Test
+
 curl -X POST "http://127.0.0.1:8000/review" \
-  -H "Content-Type: application/json" \
-  -d '{"essay":"Technology has changed education in many ways..."}'
-```
+-H "Content-Type: application/json" \
+-d '{"essay":"Technology has changed education in many ways..."}'
 
-## Project Files
-- `fast_api.py` -> API routes
-- `backend_.py` -> graph workflow and model calls
-- `requirements.txt` -> dependencies
-- `Dockerfile` -> container setup
-- `.env` -> environment values
+
+⸻
+
+Project Structure
+
+.
+├── fast_api.py
+├── backend_.py
+├── requirements.txt
+├── Dockerfile
+├── .env
+
+
+⸻
+
+Notes
+	•	Backend is designed to be modular and extendable
+	•	Supports both local and cloud-based LLM integration
+	•	Can be extended with database, authentication, and frontend UI
+
+⸻
+
+Use Cases
+	•	Automated essay evaluation systems
+	•	Educational tools
+	•	AI writing assistants
+	•	Content quality analysis platforms
+
+
