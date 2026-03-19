@@ -1,0 +1,99 @@
+# Parallel Essay Review Agent API
+
+This project is a FastAPI + LangGraph based essay review agent.
+
+## What Our Agent Does
+Given an essay, the agent runs 3 reviews in parallel:
+- Language quality
+- Depth of analysis
+- Clarity of thought
+
+Then it combines all outputs and returns:
+- Individual feedback points
+- Overall feedback summary
+- Final average score
+
+## Tech Stack
+- FastAPI (API server)
+- LangGraph (parallel workflow)
+- Ollama (default local model: `qwen3:8b`)
+- Docker (easy container run)
+
+## API Endpoints
+- `GET /home_test` -> health check
+- `POST /review` -> review an essay
+
+Example payload:
+```json
+{
+  "essay": "Your essay text here..."
+}
+```
+
+## Local Run (No API Key Needed)
+This is the easiest path and works with local Ollama.
+
+1. Pull and start Ollama model:
+```bash
+ollama pull qwen3:8b
+ollama serve
+```
+
+2. Create virtual env and install deps:
+```bash
+python -m venv myenv
+source myenv/bin/activate
+pip install -r requirements.txt
+```
+
+3. Start FastAPI server:
+```bash
+uvicorn fast_api:app --reload --host 0.0.0.0 --port 8000
+```
+
+## How To Use Your Own API Key
+1. Open `.env`.
+2. Replace `ENTER_YOUR_API_KEY` with your real key for the provider you want.
+3. Keep only keys you actually use.
+
+Important:
+- Current backend is configured for Ollama by default.
+- If you want cloud model calls, update model client setup in `backend_.py` accordingly.
+
+## Docker Usage (No Headache Steps)
+1. Build image:
+```bash
+docker build -t parallel-graph:latest .
+```
+
+2. Run container:
+```bash
+docker run --rm --name parallel-graph -p 8000:8000 --env-file .env parallel-graph:latest
+```
+
+3. If Ollama runs on your host machine, run container with host mapping env:
+```bash
+docker run --rm --name parallel-graph -p 8000:8000 \
+  --env-file .env \
+  -e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+  parallel-graph:latest
+```
+
+4. Stop container:
+```bash
+docker stop parallel-graph
+```
+
+## Quick API Test
+```bash
+curl -X POST "http://127.0.0.1:8000/review" \
+  -H "Content-Type: application/json" \
+  -d '{"essay":"Technology has changed education in many ways..."}'
+```
+
+## Project Files
+- `fast_api.py` -> API routes
+- `backend_.py` -> graph workflow and model calls
+- `requirements.txt` -> dependencies
+- `Dockerfile` -> container setup
+- `.env` -> environment values
